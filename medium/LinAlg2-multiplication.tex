@@ -1,0 +1,466 @@
+\documentclass{article}
+\usepackage{amsmath}% http://ctan.org/pkg/amsmath
+\usepackage{kbordermatrix}% http://www.hss.caltech.edu/~kcb/TeX/kbordermatrix.sty
+\usepackage{blkarray}% http://ctan.org/pkg/blkarray
+\usepackage{hyperref}
+\usepackage{blindtext}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{xcolor}
+
+\usepackage{longtable}
+\usepackage{array}
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\newcommand{\tikzmark}[1]{\tikz[overlay,remember picture] \node (#1) {};}
+
+% nodes with circle
+\newcommand{\mymk}[1]{%
+   \tikz \node[anchor=south west, draw,circle, inner sep=0pt, minimum size=7mm, text height=2mm]{\ensuremath{#1}} ;}
+% nodes without circle
+\newcommand{\mymku}[1]{%
+   \tikz \node[anchor=south west, circle, inner sep=0pt, minimum size=7mm, text height=2mm]{\ensuremath{#1}} ;}
+ 
+
+\begin{document}
+
+\centerline{\sc \large Matrix Math for Data Science }
+\vspace{.5pc}
+\centerline{\sc Part 2 - Multiplication}
+\centerline{\it (GregSimpson 2019, January)}
+\vspace{2pc}
+
+
+\section{Introduction and Rationale}
+In the first article of my matrix math series, I introduced some terms, talked about the mechanics, showed some examples and shared some simple python code to explain how to handle matrix addition and subtraction.
+For this article we will stick to that same structure but move on to talk about matrix multiplication.
+\\
+\\
+It is important to point out that there is no literal version of matrix division.
+So the concept of 'Matrix-A divided by X' is not valid.
+But keep in mind that dividing by X is the same thing as multiplying by "1 over X".
+This is a complication that I will not go into details on in this article, but you can keep it in mind incase you ever need to try it.
+\\
+\\
+As I did in the first article, I will focus on the mechanics of how you go about applying some techniques.  My examples will start out pretty simple and try not to get too complex.   This article is intended to be digestible by beginners in the field.
+\\
+\\
+ Please feel free to leave feedback.
+\\
+\vspace{3pc}
+
+
+\input{LinAlg-terms.tex}
+
+
+\newpage
+\section{Matrix Multiplication Rules}
+In order to multiply any 2 matrices, their shapes need to follow certain rules.  
+Recall that a matrix is normally specified by the number of rows and columns; in math problems, they usually say an "m by n" matrix or "m x n" \\where m = rows and n = columns
+\\
+\\
+Order is important when multiplying matrixes.
+In order to multiply matrixes, the *columns* value of the multiplier must be the same as the *rows* value of the multiplicand.
+And the resulting matrix will have the form of the *rows* of the multiplier by the *columns* value of the multiplicand.
+it is not as complicated as it sounds.  A simple explanation should make it clear.
+\\
+\\
+Lets say you have these matrixes: 
+\[
+A (2 \times 3) = \begin{bmatrix}
+    a  &  b & c      \\
+    d  &  e & f      
+\end{bmatrix}
+\]
+\[
+B (3 \times 2) = \begin{bmatrix}
+    g  &  h      \\
+    i  &  j        \\
+    k & l
+\end{bmatrix}
+\]
+\[
+C (4 \times 3) = \begin{bmatrix}
+    p  &  q &  r     \\
+    s  &  t  &  u     \\
+    v  &  w & x     \\
+    y  &  z & aa
+\end{bmatrix}
+\]
+\\
+\\
+Using those matrixes, let's take a look at this equation:
+\begin{equation}
+A \times B = E 
+\end{equation}
+\\
+Written in terms of the matrix shapes, that equation looks like:
+\begin{center}
+( 2 x \tikzmark{a}3 )  X ( \tikzmark{b}3 x 2)
+
+\begin{tikzpicture}[overlay,remember picture,out=315,in=225,distance=0.4cm]
+    \draw[->,red,shorten >=3pt,shorten <=3pt] (a.center) to (b.center);
+\end{tikzpicture}
+\end{center}
+If the intermal dimensions are equal, the matrixes can be multiplied.
+In this example, the 3's are equal so the matrixes can be multiplied.
+\\
+\\
+The resulting matrix shape will be the outside row and column counts.
+In this example, the outer dimensions are both 2, so the resulting matrix (Matrix E) will be (2 x 2)
+\begin{center}
+( \tikzmark{a}2 x 3 )  X ( 3 x \tikzmark{b}2)
+\begin{tikzpicture}[overlay,remember picture,out=315,in=225,distance=0.4cm]
+    \draw[->,red,shorten >=3pt,shorten <=3pt] (a.center) to (b.center);
+\end{tikzpicture}
+\end{center}
+Interestingly, in this example it is also possible for this equation to be valid:
+\begin{equation}
+B \times A = E 
+\end{equation}
+\\
+Written in terms of the matrix shapes, that equation looks like:
+\begin{center}
+( 3 x \tikzmark{a}2 )  X ( \tikzmark{b}2 x 3)
+
+\begin{tikzpicture}[overlay,remember picture,out=315,in=225,distance=0.4cm]
+    \draw[->,red,shorten >=3pt,shorten <=3pt] (a.center) to (b.center);
+\end{tikzpicture}
+\end{center}
+If the intermal dimensions are equal, the matrixes can be multiplied.
+In this example, the 2's are equal so the matrixes can be multiplied.
+\\
+\\
+The resulting matrix shape will be the outside row and column counts.
+In this example, the outer dimensions are both 3, so the resulting matrix (Matrix E) will be (3 x 3)
+\begin{center}
+( \tikzmark{a}3 x 2 )  X ( 2 x \tikzmark{b}3)
+\begin{tikzpicture}[overlay,remember picture,out=315,in=225,distance=0.4cm]
+    \draw[->,red,shorten >=3pt,shorten <=3pt] (a.center) to (b.center);
+\end{tikzpicture}
+\end{center}
+However, that is not always the case.  Lets consider matrixes B and C.
+\begin{equation}
+(invalid)  B \times C = E 
+\end{equation}
+\\
+Written in terms of the matrix shapes, that equation looks like:
+\begin{center}
+( 3 x \tikzmark{a}2 )  X ( \tikzmark{b}4 x 3)
+
+\begin{tikzpicture}[overlay,remember picture,out=315,in=225,distance=0.4cm]
+    \draw[->,red,shorten >=3pt,shorten <=3pt] (a.center) to (b.center);
+\end{tikzpicture}
+\end{center}
+If the intermal dimensions are equal, the matrixes can be multiplied.
+In this example, the internal dimensions are NOT are equal so the matrixes cannot be multiplied.
+\\
+\\
+Rearranging the equation does make it possible to multiply the 2 matrixes, as seen here:
+\begin{equation}
+C \times B = E 
+\end{equation}
+\\
+Written in terms of the matrix shapes, that equation looks like:
+\begin{center}
+( 4 x \tikzmark{a}3 )  X ( \tikzmark{b}3 x 2)
+
+\begin{tikzpicture}[overlay,remember picture,out=315,in=225,distance=0.4cm]
+    \draw[->,red,shorten >=3pt,shorten <=3pt] (a.center) to (b.center);
+\end{tikzpicture}
+\end{center}
+If the intermal dimensions are equal, the matrixes can be multiplied.
+In this example, the 3's are equal so the matrixes can be multiplied.
+\\
+\\
+The resulting matrix shape will be the outside row and column counts.
+In this example, the outer dimensions are 4 and 2 , so the resulting matrix (Matrix E) will be (4 x 2)
+\begin{center}
+( \tikzmark{a}4 x 3 )  X ( 3 x \tikzmark{b}2)
+\begin{tikzpicture}[overlay,remember picture,out=315,in=225,distance=0.4cm]
+    \draw[->,red,shorten >=3pt,shorten <=3pt] (a.center) to (b.center);
+\end{tikzpicture}
+\end{center}
+% gjs TBD - add a subsection to introduce the formula/process here
+Now that we can tell which matrixes we can multiply together, we need to know how to multiply them.
+Here is the process.  From the A * B = E example above, here are the steps to define matrix E:
+\[
+\begin{bmatrix}
+    \tikzmark{a}a  &  \tikzmark{c}b & \tikzmark{e}c      \\
+    d  &  e & f      
+\end{bmatrix}
+\times
+\begin{bmatrix}
+    \tikzmark{b}g &  h      \\
+    \tikzmark{d}i  &  j        \\
+    \tikzmark{f}k  &  l
+\end{bmatrix}
+=
+\begin{bmatrix}
+    \tikz \node[draw,circle]{w};  & x      \\
+    y  &  z
+\end{bmatrix}
+\begin{tikzpicture}[overlay,remember picture,out=315,in=225,distance=0.4cm]
+    \draw[->,red,shorten >=3pt,shorten <=3pt] (a.center) to (b.center);
+	\draw[->,blue,shorten >=3pt,shorten <=3pt] (c.center) to (d.center);
+	\draw[->,black,shorten >=3pt,shorten <=3pt] (e.center) to (f.center);
+\end{tikzpicture}
+\]
+In the resulting matrix E, the element W is made up of this formula 
+\begin{equation}
+w= a \times g + b \times i + c \times k
+\end{equation}
+\\
+\\
+% gjs end
+The same formula applies to each entry in the resulting matrix
+\[
+\begin{bmatrix}
+    a  &  b & c      \\
+    \tikzmark{a}d  &  \tikzmark{c}e & \tikzmark{e}f      
+\end{bmatrix}
+\times
+\begin{bmatrix}
+    \tikzmark{b}g &  h      \\
+    \tikzmark{d}i  &  j        \\
+    \tikzmark{f}k  &  l
+\end{bmatrix}
+=
+\begin{bmatrix}
+    w  & x      \\
+    \tikz \node[draw,circle]{y};  &  z
+\end{bmatrix}
+\\
+\\
+\begin{tikzpicture}[overlay,remember picture,out=315,in=225,distance=0.4cm]
+    \draw[->,red,shorten >=3pt,shorten <=3pt] (a.center) to (b.center);
+	\draw[->,blue,shorten >=3pt,shorten <=3pt] (c.center) to (d.center);
+	\draw[->,black,shorten >=3pt,shorten <=3pt] (e.center) to (f.center);
+\end{tikzpicture}
+\]
+\begin{equation}
+y= d \times g + e \times i + f \times k
+\end{equation}
+\\
+\\
+
+\[
+\begin{bmatrix}
+    \tikzmark{a}a  &  \tikzmark{c}b & \tikzmark{e}c      \\
+    d  &  e & f      
+\end{bmatrix}
+\times
+\begin{bmatrix}
+    g & \tikzmark{b} h      \\
+    i  &  \tikzmark{d}j        \\
+    k  &  \tikzmark{f}l
+\end{bmatrix}
+=
+\begin{bmatrix}
+    w  & \tikz \node[draw,circle]{x};      \\
+    y  &  z
+\end{bmatrix}
+\\
+\\
+\begin{tikzpicture}[overlay,remember picture,out=315,in=225,distance=0.4cm]
+    \draw[->,red,shorten >=3pt,shorten <=3pt] (a.center) to (b.center);
+	\draw[->,blue,shorten >=3pt,shorten <=3pt] (c.center) to (d.center);
+	\draw[->,black,shorten >=3pt,shorten <=3pt] (e.center) to (f.center);
+\end{tikzpicture}
+\]
+\begin{equation}
+x= a \times h + b \times j + c \times l
+\end{equation}
+\\
+\\
+\[
+\begin{bmatrix}
+    a  &  b & c      \\
+    \tikzmark{a}d  &  \tikzmark{c}e & \tikzmark{e}f      
+\end{bmatrix}
+\times
+\begin{bmatrix}
+    g & \tikzmark{b} h      \\
+    i  &  \tikzmark{d}j        \\
+    k  &  \tikzmark{f}l
+\end{bmatrix}
+=
+\begin{bmatrix}
+    w  & x      \\
+    y  &  \tikz \node[draw,circle]{z};
+\end{bmatrix}
+\\
+\\
+\begin{tikzpicture}[overlay,remember picture,out=315,in=225,distance=0.4cm]
+    \draw[->,red,shorten >=3pt,shorten <=3pt] (a.center) to (b.center);
+	\draw[->,blue,shorten >=3pt,shorten <=3pt] (c.center) to (d.center);
+	\draw[->,black,shorten >=3pt,shorten <=3pt] (e.center) to (f.center);
+\end{tikzpicture}
+\]
+\begin{equation}
+z= d \times h + e \times j + f \times l
+\end{equation}
+\\
+\\
+You use the same, position based approach to define each entry in the solution matrix.
+The full matrix E is built like this:
+\[
+\begin{bmatrix}
+	w= a \times g + b \times i + c \times k & x = a \times h + b \times j + c \times l \\
+	y = d \times g + e \times i + f \times k & z = d \times h + e \times j + f \times l
+\end{bmatrix}
+\]
+
+
+
+\newpage
+\section{Matrix Multiplication Examples}
+Let's look at some examples of multiplying matrixes.  We will use numbers arranged into the shapes of our examples above.
+\\
+\\
+We wil define these matrixes to use as our examples by just filling in the letters in our previous examples with integers: 
+\[
+A (2 x 3) = \begin{bmatrix}
+    1  &  2 & 3      \\
+    4  &  5 & 6      
+\end{bmatrix}
+\]
+\[
+B (3 x 2) = \begin{bmatrix}
+    7  &  8      \\
+    9  &  10        \\
+    11 & 12
+\end{bmatrix}
+\]
+\[
+C (4 x 3) = \begin{bmatrix}
+    13  &  14 &  15     \\
+    16  &  17  &  18     \\
+    19  &  20 & 21     \\
+    22  &  23 & 24
+\end{bmatrix}
+\]
+\\
+\\
+Using those matrixes, let's take a look at some equations.  From our examinations above, we know that matrixes A and B can be multiplied in either order.
+\\
+To multiply matrixes, you take each element in a row from the first matrix, multiply it by each element in the column of the second matrix and add those products together.
+You follow that pattern to multiply each row by each column.
+It is easier to see by example:
+\\
+\\
+Lets see how rearranging the equation effects the resulting matrix.
+\begin{equation}
+A \times B = E 
+\end{equation}
+\\
+\[
+A = \begin{bmatrix}
+    1  &  2 & 3      \\
+    4  &  5 & 6      
+\end{bmatrix}
+\times
+B = \begin{bmatrix}
+    7  &  8      \\
+    9  &  10        \\
+    11 & 12
+\end{bmatrix}
+\]
+% \begin{pmatrix}1\cdot \:7+2\cdot \:9+3\cdot \:11&1\cdot \:8+2\cdot \:10+3\cdot \:12\\ 4\cdot \:7+5\cdot \:9+6\cdot \:11&4\cdot \:8+5\cdot \:10+6\cdot \:12\end{pmatrix}
+\[
+E (2 x 2) = \begin{bmatrix}
+    1 \times 7 + 2 \times 9 + 3 \times 11  &  1 \times 8 + 2 \times 10 + 3 \times 12     \\
+    4 \times 7 + 5 \times 9 + 6 \times 11  &  4 \times 8 + 5 \times 10 + 6 \times 12     
+\end{bmatrix}
+\]
+So Matrix E is a 2 x 2 matrix that resolves to:
+\[
+E = \begin{bmatrix}
+    58  &  64     \\
+    139  &  154     
+\end{bmatrix}
+\]
+\\
+\\
+Resolving the reversed equation becomes:
+\begin{equation}
+B \times A = E 
+\end{equation}
+\\
+\[
+B = \begin{bmatrix}
+    7  &  8      \\
+    9  &  10        \\
+    11 & 12
+\end{bmatrix}
+\times
+A = \begin{bmatrix}
+    1  &  2 & 3      \\
+    4  &  5 & 6      
+\end{bmatrix}
+\]
+\[
+E (3 x 3) = \begin{bmatrix}
+    7   \times 1 + 8   \times 4 & 7   \times 2 + 8   \times 5  &  7   \times 3 + 8   \times 6     \\
+    9   \times 1 + 10 \times 4 & 9   \times 2 + 10 \times 5  &  9   \times 3 + 10 \times 6     \\
+    11 \times 1 + 12 \times 4 & 11 \times 2 + 12 \times 5  &  11 \times 3 + 12 \times 6      
+\end{bmatrix}
+\]
+\\
+\\
+So Matrix E is a 3 x 3 matrix that resolves to:
+\[
+E = \begin{bmatrix}
+    39  &  54 & 69  \\
+    49  &  68 & 87  \\
+    59 & 82 & 105     
+\end{bmatrix}
+\]
+As you can see, the order of multiplication elements has a huge effect on the resulting matrixes.
+\\
+\\
+See if you can work out the answer to 
+\begin{equation}
+C \times B = E 
+\end{equation}
+\\
+The numbers get large pretty fast, but if you take your time and stick to the formula carefully, you will get the right answer (shown here):
+\[
+E = \begin{bmatrix}
+    382  &  424  \\
+    463  &  514  \\
+	544  &  604  \\
+	625  &  694     
+\end{bmatrix}
+\]
+I posted the formulas to fill out that matrix in the next section.
+\\
+\\
+\newpage
+\section{The steps for multiplying C * B above }
+
+\[
+\begin{bmatrix}
+13 \times 7+14 \times 9+15 \times 11 & 13 \times 8+14 \times 10+15 \times 12 \\ 
+16 \times 7+17 \times 9+18 \times 11 & 16 \times 8+17 \times 10+18 \times 12 \\
+19 \times 7+20 \times 9+21 \times 11 & 19 \times 8+20 \times 10+21 \times 12 \\
+22 \times 7+23 \times 9+24 \times 11 & 22 \times 8+23 \times 10+24 \times 12
+\end{bmatrix}
+\]
+
+
+\newpage
+\section{Matrix multiplication example in python code }
+Here is a short and simple python program that implements our matrix multiplication examples.
+\\
+\subsubsection{3x3 matrix multiplication examples in python code}
+\lstinputlisting[language=Python]{multiply.py}
+
+
+\input{LinAlg-references.tex}
+
+
+\end{document}

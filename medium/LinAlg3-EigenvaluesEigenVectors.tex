@@ -1,0 +1,298 @@
+
+\documentclass{article}
+\usepackage{amsmath}% http://ctan.org/pkg/amsmath
+\usepackage{bbold}
+\usepackage{kbordermatrix}% http://www.hss.caltech.edu/~kcb/TeX/kbordermatrix.sty
+\usepackage{blkarray}% http://ctan.org/pkg/blkarray
+\usepackage{hyperref}
+\usepackage{blindtext}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{xcolor}
+
+\usepackage{longtable}
+\usepackage{array}
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\newcommand{\tikzmark}[1]{\tikz[overlay,remember picture] \node (#1) {};}
+
+% nodes with circle
+\newcommand{\mymk}[1]{%
+   \tikz \node[anchor=south west, draw,circle, inner sep=0pt, minimum size=7mm, text height=2mm]{\ensuremath{#1}} ;}
+% nodes without circle
+\newcommand{\mymku}[1]{%
+   \tikz \node[anchor=south west, circle, inner sep=0pt, minimum size=7mm, text height=2mm]{\ensuremath{#1}} ;}
+ 
+
+\begin{document}
+
+\centerline{\sc \large Matrix Math for Data Science }
+\vspace{.5pc}
+\centerline{\sc Part 3 - Eigenvalues and EigenVectors}
+\centerline{\it (Greg Simpson 2019, January)}
+\vspace{2pc}
+
+
+\section{Introduction and Rationale}
+This is the 3rd article in my matrix math series. I introduced some terms and covered matrix addition and subtraction in the first article.
+And I covered matrix multiplication in the second article.   Each article assumes that you know why you want to add, subtract or multiply matrixes so they only talk about the mechanics of how you go about it.
+This article will be no different, except that it will focus on the mechanics of eigenvalues and eigenvectors.  There is a lot of information out there to explain whay you may need the "Eigen's", so I do not want to duplicate that. 
+I list a few links in the reference section at the end of this article.
+\\
+\\
+ Please feel free to leave feedback.
+\\
+\vspace{3pc}
+
+
+\input{LinAlg-terms.tex}
+
+\newpage
+\section{Matrix Eigenvalue Rules}
+For any lambda that satisfies 
+\[
+A \times \vec{v} = \lambda \times \vec{v} 
+\]
+for any Matrix(A), non-zero vector $ \vec{v} $ and the Identity matrix $ \mathbb{1} $
+\\
+\\
+Then the determinant of ((lambda times the identity matrix) - A)
+\\
+must be equal to zero.  The math formula that for that is :
+\[
+\det ( \lambda \mathbb{1} - A ) = 0
+\] 
+\\
+\\
+Another way to say that is
+\\
+"lambda is an eigenvalue of A if an only if that equation is true".
+\\
+\\
+
+
+
+\newpage
+\section{Matrix Eigenvalue Example}
+Let's look at an example of solving for Eigenvalues.  
+\\
+For matrix 
+\[
+A = \begin{bmatrix}
+    1 & 3   \\
+    4 & 5      
+\end{bmatrix}
+\]
+\\
+\\
+Given the formula from the rule above, solving this equation will find the eigenvalues of A
+\[
+\det ( \lambda \times
+\begin{bmatrix}
+    1 & 0   \\
+    0 & 1      
+\end{bmatrix}
+-
+\begin{bmatrix}
+    1 & 3   \\
+    4 & 5      
+\end{bmatrix}
+) = 0
+\]
+\\
+\\
+That becomes
+\[
+\det ( 
+\begin{bmatrix}
+    \lambda & 0   \\
+    0 & \lambda      
+\end{bmatrix}
+-
+\begin{bmatrix}
+    1 & 3   \\
+    4 & 5      
+\end{bmatrix}
+) = 0
+\]
+\\
+\\
+Then this
+\[
+\det ( 
+\begin{bmatrix}
+    \lambda -1 & 0 - 3   \\
+    0 - 4 & \lambda - 5      
+\end{bmatrix}
+) = 0
+\]
+\\
+\\
+Taking the determinant is solved by :
+\[
+(( \lambda-1 ) \times ( \lambda - 5 ) - ( -4 \times -3 ) = 0
+\]
+\\
+\\
+Expanding that equation give us :
+\[
+{\lambda}^2  - 5\lambda - 1\lambda + 5  - 12 = 0
+\]
+or
+\[
+{\lambda}^2  - 6\lambda - 7 = 0
+\]
+\\
+\\
+Factoring that gives us (finally) :
+\[
+(\lambda - 7 )  \times (\lambda + 1 ) = 0
+\]
+\\
+\\
+And that means that the non-zero Eigenvalues for matrix A, are :
+\[
+\lambda = 7 ; \lambda = -1
+\]
+\\
+\\
+
+\newpage
+\section{Matrix Eigenvector Rules}
+Eigenvectors are the set of vectors that satisfy the equation that we used for the determinant to find the eigenvalues.
+\\
+\\
+In other words, you find eigenvalues using this equation:
+\[
+\det ( \lambda \mathbb{1} - A ) = 0
+\] 
+\\
+\\
+And you find eigenvectors, by using each eigenvalue in place of lambda to find the NullSpace given by this equation:
+\[
+N( \lambda \mathbb{1} - A ) 
+\]
+The Nullspace of a matrix equals the Nullspace of the Reduced Row Eschelon Form (RREF) of the matrix.
+\\
+The Eigenspace for each eigenvalue of a matrix is the set of eigenvectors that correspond to that eigenvalue.
+\\
+\\
+So the algorithm to find the eigenvectors is as follows.
+\begin{enumerate}
+	\item set \textbf{lambda} equal to each eigenvalue (a FOR loop)
+	\item solve the equation $ ( \lambda \mathbb{1} - A ) $
+	\item find the Nullspace from step 2
+	\begin{enumerate}
+		\item reduce the matrix to RREF
+		\item solve for that times some vector $\vec{v}$  = the zero vector
+	\end{enumerate}
+\end{enumerate}
+.
+\\
+
+
+We will look at an example next.  It should make things much more clear.
+
+
+\newpage
+\section{Matrix Eigenvector Example}
+We will find the eigenvectors that correspond to each eigenvalue from our previous example.
+These are also called the eigenspaces for our matrix A.
+\\
+\\
+Our two eigenvalues from above were $\lambda = (-1)$ and $\lambda = 7$.
+\\
+So we know we have 2 Nullspaces to find (one for each eigenvalue :  -1 and 7).
+\\
+\\
+\subsection{Let $\lambda = (-1)$}
+Find, E $\textsubscript{(-1)} = N( \lambda \mathbb{1} - A)$ 
+\\
+\\
+Filling in our $\lambda$ and matrix example values gives us
+\begin{center}
+\begin{enumerate}
+	\item $ N( \begin{bmatrix}    -1  & 0 \\  0  & -1       \end{bmatrix} - \begin{bmatrix} 1  & 3    \\  4  & 5      \end{bmatrix} )$
+	\item $ = N( \begin{bmatrix}    -2 & -3 \\  -4 & -6       \end{bmatrix} )$
+	\begin{enumerate}
+		\item RREF R$\textsubscript{(2,1)}-2 = \begin{bmatrix}    -2 & -3 \\  0 & 0       \end{bmatrix}$
+		\item RREF R$\textsubscript{(1)}\frac{-1}{2} = \begin{bmatrix}    1 & \frac{3}{2} \\  0 & 0       \end{bmatrix}$
+	\end{enumerate}
+	\item $ = \begin{bmatrix}    1 & \frac{3}{2} \\  0 & 0       \end{bmatrix} 
+		\times  \begin{bmatrix}   x  \\  y    \end{bmatrix} = \vec{0} $
+	\begin{enumerate}
+		\item $ x + \frac{ 3}{2} y = 0 $
+		\item $ x = \frac{-3}{2} y $
+	\end{enumerate}
+	\item $\begin{bmatrix}   \frac{-3}{2}  y  \\  y    \end{bmatrix} = \vec{0} $
+	\item Let y=1, then the eigenvector that corresponds to eigenvalue (-1) is
+	\\
+	\begin{center}
+	E $\textsubscript{(-1)} = \begin{bmatrix}   \frac{-3}{2} \\  1    \end{bmatrix}$
+	\end{center}
+\end{enumerate}
+\end{center}
+
+\newpage
+\subsection{Let $\lambda = (7)$}
+Find, E $\textsubscript{(7)} = N( \lambda \mathbb{1} - A)$ 
+\\
+\\
+Filling in our $\lambda$ and matrix example values gives us
+\begin{center}
+\begin{enumerate}
+	\item $ N( \begin{bmatrix}    7 & 0 \\  0 & 7       \end{bmatrix} - \begin{bmatrix} 1  & 3    \\  4  & 5      \end{bmatrix} )$
+	\item $ = N( \begin{bmatrix}    6 & -3 \\ -4 & 2       \end{bmatrix} )$
+	\begin{enumerate}
+		\item RREF R$\textsubscript{(2,1)}\frac{2}{3} = \begin{bmatrix}    6 & -3 \\  0 & 0       \end{bmatrix}$
+		\item RREF R$\textsubscript{(1)}\frac{1}{6} = \begin{bmatrix}    1 & \frac{-1}{2} \\  0 & 0       \end{bmatrix}$
+	\end{enumerate}
+	\item $ = \begin{bmatrix}    1  &    \frac{-1}{2} \\     0  & 0       \end{bmatrix} 
+		\times  \begin{bmatrix}   x  \\  y    \end{bmatrix} = \vec{0} $
+	\begin{enumerate}
+		\item $ x - \frac{ 1}{2} y = 0 $
+		\item $ x = \frac{1}{2} y $
+	\end{enumerate}
+	\item $\begin{bmatrix}   \frac{1}{2}  y  \\  y    \end{bmatrix} = \vec{0} $
+	\item Let y=1, then the eigenvector that corresponds to eigenvalue (7) is
+	\\
+	\begin{center}
+	E $\textsubscript{(7)} = \begin{bmatrix}   \frac{1}{2} \\  1    \end{bmatrix}$
+	\end{center}
+\end{enumerate}
+\end{center}
+
+\newpage
+\subsection{Eigenspace for our example}
+Eigenvector for
+$ \lambda = -1 :  
+\begin{bmatrix}
+   - \frac{3}{2}    \\
+    1      
+\end{bmatrix}
+$
+\\
+\\
+Eigenvector for
+$ \lambda = +7  :
+\begin{bmatrix}
+   \frac{1}{2}    \\
+    1      
+\end{bmatrix}
+$
+
+
+\newpage
+\section{Matrix Eigenvalue and Eigenvector example in python code }
+Here is a short and simple python program that implements our eigen examples.
+\\
+\subsubsection{EigenValue and EigenVector examples in python code}
+\lstinputlisting[language=Python]{eigen.py}
+
+\input{LinAlg-references.tex}
+
+
+\end{document}

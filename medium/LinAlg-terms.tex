@@ -1,0 +1,76 @@
+
+\section{Definitions}
+We will start with a few definitions related to matrices.  It helps if you think of them like database tables, so I will use database table imagry in my explanations.
+\\
+\begin{description}
+\item [columns] the fields that define a table; they go left to right, horizontally
+\[
+\begin{array}{lc}
+ \verb|example of columns| & \kbordermatrix{\text{columns}&col_1&col_2&\ldots &col_n\cr
+                rows& \vdots & \vdots & \ddots & \vdots\cr
+               } \\[15pt]
+\end{array}
+\]
+
+
+\item [dimension] numeric description of the number of rows and columns; in math problems, they usually say an "m by n" matrix or "m x n" \\where m = rows and n = columns
+\[
+\begin{array}{lc}
+  \verb|3x3 : m=3, n=3| & \begin{bmatrix}
+                    a & b & c \\
+                    d & e & f \\
+                    g & h & i
+                  \end{bmatrix} \\[15pt]
+\\
+  \verb|2x3 : rows=2, cols=3| & \begin{bmatrix}
+                    a & b & c \\
+                    d & e & f 
+                  \end{bmatrix} \\[15pt]
+\\
+  \verb|2x4 : m=2, n=4| & \begin{bmatrix}
+                    a & b & c & d\\
+                    e & f & g & h 
+                  \end{bmatrix} \\[15pt]
+\end{array}
+\]
+\item [matrix] an array that has entries in two directions (or more): an "m by n" or "m x n" array
+
+
+\centerline{\it (see the examples for 'dimension' ) }
+
+\item [multiplication] multiplier x multiplicand = product
+\\
+\item [reduced row eschelon form (RREF)]  see reference link below
+\\
+\item [rows] the data that populates the table; each row usually has an entry for each column
+\[
+\begin{array}{lc}
+ \verb|example of rows| & \kbordermatrix{&col_1&col_2&\ldots &col_n\cr
+	     row_1&\vdots &  \vdots  & \ldots & \vdots\cr
+                row_2& \vdots  &  \vdots & \ldots & \vdots\cr	
+                row_m& \vdots & \vdots & \ldots & \vdots\cr
+               } \\[15pt]
+\end{array}
+\]
+\item [shape] another term for dimension
+
+\item [vector] an array that has entries in one direction:\\1 row by n columns\\or m rows by 1 column
+\[
+\begin{array}{lc}
+ \verb|row vector| & \kbordermatrix{\text{columns}&col_1&col_2&\ldots &col_n\cr
+                1 row& a & b & \ldots & d\cr
+               } \\[15pt]
+\end{array}
+\]
+\[
+\begin{array}{lc}
+ \verb|column vector| & \kbordermatrix{\text{1 column}&col_1\cr
+	     row_1&a\cr
+                row_2& b\cr	
+                row_m& \vdots\cr
+               } \\[15pt]
+\end{array}
+\]
+
+
+\end{description}

@@ -1,0 +1,234 @@
+\documentclass{article}
+\usepackage{amsmath}% http://ctan.org/pkg/amsmath
+\usepackage{kbordermatrix}% http://www.hss.caltech.edu/~kcb/TeX/kbordermatrix.sty
+\usepackage{blkarray}% http://ctan.org/pkg/blkarray
+\usepackage{hyperref}
+\usepackage{blindtext}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+\begin{document}
+
+\centerline{\sc \large Matrix Math for Data Science }
+\vspace{.5pc}
+\centerline{\sc Part 1 - Addition and Subtraction}
+\centerline{\it (GregSimpson 2018, December)}
+\vspace{2pc}
+
+
+\section{Introduction and Rationale}
+I recently returned to graduate school as a "seasoned computer professional".  I was looking to update my skills and fill in the gaps in my data science knowledge. 
+I applied and was accepted into the University of Denver's MS in Data Science program.
+\\
+\\
+One of the fundamental topics in data science is math. So the university has a few "bridge" classes to refresh and sharpen your math skills.
+My first class this past semester was Discrete Math and Linear Algebra.  I will save the discrete math topic for a different series on another day.
+For this series, I will discuss matrix math with a little linear algebra mixed in.
+\\
+\\
+There are lots of articles available that discuss the reasons for using various mathematical algorithms.  In an effort to not add to that pile of material, I will focus on the mechanics of how you go about applying some techniques.  My examples will start out pretty simple and try not to get too complex.   I intend this to be digestible by beginners in the field.
+We'll see how it goes.
+\\
+\\
+ Please feel free to leave feedback.
+\\
+\vspace{3pc}
+
+
+\input{LinAlg-terms.tex}
+
+
+\newpage
+\section{Matrix Addition}
+In order to add any 2 matrices, they must be of the same shape.  That means that you can add a 3x3 matrix to a 3x3 matrix, or a 2x2 to a 2x2.
+But you cannot add a 3x3 to a 2x3.  I will explain the reason for that in a minute.
+When you add 2 matrices together, it is a cell by cell operation. 
+\\That means if are trying to add these 2 matrices to produce a new matrix C, 
+
+\begin{equation*}
+  A + B = C 
+\end{equation*}
+where: 
+\[
+A = \begin{bmatrix}
+    a  &  b      \\
+    c  &  d      
+\end{bmatrix}
+B = \begin{bmatrix}
+    e  &  f      \\
+    g  &  h      
+\end{bmatrix} 
+\]
+
+the resulting matrix , C =  
+\[
+\begin{bmatrix}
+    a+e  &  b+f      \\
+    c+g  &  d+h      
+\end{bmatrix}
+\]
+
+\vspace{2pc}
+
+In general, when you write out a program to navigate an array, the common practice (or convention) is to use the subscript 'i' to iterate over the rows and 'j' to iterate over the columns. 
+Math texts use the same conventions in their examples.
+So, the conventional way to describe what the example above shows is :
+\\
+\begin{equation*}
+  A + B = [a_{ij} + b_{ij}] 
+\end{equation*}
+where i and j iterate over all of the rows and columns in A and B
+\\and add the values in the cells of A and B and record each sum in matrix C.
+
+\vspace{2pc}
+
+So, to be clear, all of the cells in all 3 of the matrices involved need to be able to line up.  If the matrix shapes were different, say you tried to add a (2x2) matrix to a (2x3) matrix, we have no way to process any of the cells that do not line up with the other matrix.  That is why they need to be the same shape.
+\vspace{2pc}
+
+\subsection{Practical Examples}
+We will do a few practical examples to make it a lot more clear.
+
+\subsubsection{2x2 matrix addition example}
+
+\begin{equation*}
+  A + B = C 
+\end{equation*}
+where: 
+
+\[
+A = \begin{bmatrix}
+    1  & 2      \\
+    3  & 4     
+\end{bmatrix}
+B = \begin{bmatrix}
+    5  &  6      \\
+    7  &  8      
+\end{bmatrix} 
+\]
+the resulting matrix  
+\[C =  
+\begin{bmatrix}
+    1+5  &  2+6      \\
+    3+7  &  4+8      
+\end{bmatrix}
+=
+\begin{bmatrix}
+    6  &  8      \\
+    10  & 12      
+\end{bmatrix}
+\]
+\vspace{2pc}
+
+\subsubsection{3x3 matrix addition example}
+
+\begin{equation*}
+  A + B = C 
+\end{equation*}
+where: 
+
+\[
+A = \begin{bmatrix}
+    1 & 2 & 3   \\
+    4 & 5 & 6   \\
+    7 & 8 & 9     
+\end{bmatrix}
+B = \begin{bmatrix}
+    1 & 2 & 3   \\
+    4 & 5 & 6   \\
+    7 & 8 & 9     
+\end{bmatrix} 
+\]
+the resulting matrix
+\[C =
+\begin{bmatrix}
+    1+1 & 2+2 & 3+3  \\
+    4+4 & 5+5 & 6+6  \\ 
+    7+7 & 8+8 & 9+9     
+\end{bmatrix}
+=
+\begin{bmatrix}
+    2 & 4 & 6   \\
+    8 & 10 & 12 \\
+    14 & 16 & 18      
+\end{bmatrix}
+\]
+
+
+\vspace{2pc}
+\newpage
+This really is not as hard as it sounds, at least for small matrices. But it can get pretty messy if you are doing this by hand.
+Here is a short and simple python program that implements our 3x3 matrix example.
+\\
+If you are familiar with python and Pandas dataframes, you might notice that an m x n matrix looks a lot like a Pandas dataframe.
+This implementation is only done using simple python native elements.
+\\It is fine this makes no sense to you at the moment.  You do not need python to understand the math here. 
+Explaining that in much more detail is beyond the scope of this paper, and could get confusing.  So that will also be another topic for a different paper.
+\subsubsection{3x3 matrix addition example in python code}
+\lstinputlisting[language=Python]{add.py}
+
+\newpage
+\section{Matrix Subtraction}
+Matrix subtraction works in much the same way as addition, except that you subtract the values instead of adding them as you parse each cell in the matrices.
+The rules about only working for matrices of the same shape apply to subtraction just as they did to addition.
+\\
+So, where this is the mathematical definition of matrix addition :
+\\
+\begin{equation*}
+  A + B = [a_{ij} + b_{ij}] 
+\end{equation*}
+where i and j iterate over all of the rows and columns in A and B, add the values in the cells and record each sum in matrix C.
+
+\vspace{2pc}
+This is the mathematical definition of matrix subtraction:
+\\
+\begin{equation*}
+  A - B = [a_{ij} - b_{ij}] 
+\end{equation*}
+where i and j iterate over all of the rows and columns in A and B, subtract the values in the cells and record each sum in matrix C.
+
+\subsection{Practical Example}
+
+\subsubsection{3x3 matrix subtraction example}
+
+\begin{equation*}
+  A - B = C 
+\end{equation*}
+where: 
+
+\[
+A = \begin{bmatrix}
+    1 & 2 & 3   \\
+    4 & 5 & 6   \\
+    7 & 8 & 9     
+\end{bmatrix}
+B = \begin{bmatrix}
+    1 & 2 & 3   \\
+    4 & 5 & 6   \\
+    7 & 8 & 9     
+\end{bmatrix} 
+\]
+the resulting matrix
+\[C = 
+\begin{bmatrix}
+    1-1 & 2-2 & 3-3  \\
+    4-4 & 5-5 & 6-6  \\ 
+    7-7 & 8-8 & 9-9     
+\end{bmatrix}
+=
+\begin{bmatrix}
+    0 & 0 & 0  \\
+    0 & 0 & 0  \\
+    0 & 0 & 0      
+\end{bmatrix}
+\]
+
+\vspace{2pc}
+\newpage
+Here is a short and simple python program that implements our 3x3 matrix subtraction example.
+\\
+\subsubsection{3x3 matrix subtraction example in python code}
+\lstinputlisting[language=Python]{subtract.py}
+
+\input{LinAlg-references.tex}
+
+\end{document}
